@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6ec7e7bf-f0eb-4dc4-b7af-e1945ac5426e" name="Default Changelist" comment="" />
+    <list default="true" id="6ec7e7bf-f0eb-4dc4-b7af-e1945ac5426e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,6 +17,9 @@
     </option>
   </component>
   <component name="GOROOT" path="C:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1h2c2xVdrohVgY2Z9JnLSewBnd0" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -30,7 +35,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../gin-vue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
@@ -82,22 +87,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="944" y="282" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1599212980875" />
-    <state width="1877" height="481" key="GridCell.Tab.0.bottom" timestamp="1599218566358">
+    <state width="1877" height="481" key="GridCell.Tab.0.bottom" timestamp="1599218758123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="481" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1599218566358" />
-    <state width="1877" height="481" key="GridCell.Tab.0.center" timestamp="1599218566358">
+    <state width="1877" height="481" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1599218758123" />
+    <state width="1877" height="481" key="GridCell.Tab.0.center" timestamp="1599218758123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="481" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1599218566358" />
-    <state width="1877" height="481" key="GridCell.Tab.0.left" timestamp="1599218566357">
+    <state width="1877" height="481" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1599218758123" />
+    <state width="1877" height="481" key="GridCell.Tab.0.left" timestamp="1599218758123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="481" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1599218566357" />
-    <state width="1877" height="481" key="GridCell.Tab.0.right" timestamp="1599218566358">
+    <state width="1877" height="481" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1599218758123" />
+    <state width="1877" height="481" key="GridCell.Tab.0.right" timestamp="1599218758123">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="481" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1599218566358" />
+    <state width="1877" height="481" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1599218758123" />
     <state x="361" y="104" key="SettingsEditor" timestamp="1599212517480">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
