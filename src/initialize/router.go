@@ -10,6 +10,8 @@ func Routers() *gin.Engine {
 
 	ApiGroup := Router.Group("")
 	router.InitTestRouter(ApiGroup)
+	router.InitMysqlRouter(ApiGroup)
+	router.InitClickHouseRouter(ApiGroup)
 
 	return Router
 }
