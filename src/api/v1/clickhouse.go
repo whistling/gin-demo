@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/ClickHouse/clickhouse-go"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/jmoiron/sqlx"
 	"log"
 	"time"
 )
@@ -69,29 +71,27 @@ func ClickInsert(c *gin.Context) {
 }
 
 func ClickQuery(c *gin.Context) {
-
-	rows, err := connect.Query("SELECT country_code, os_id, browser_id, categories, action_day, action_time FROM example")
+	connect, err := sqlx.Open("clickhouse", "tcp://192.168.10.10:9000?debug=true&user=homestead&password=han")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var (
-			country               string
-			os, browser           uint8
-			categories            []int16
-			actionDay, actionTime time.Time
-		)
-		if err := rows.Scan(&country, &os, &browser, &categories, &actionDay, &actionTime); err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("country: %s, os: %d, browser: %d, categories: %v, action_day: %s, action_time: %s", country, os, browser, categories, actionDay, actionTime)
+	var items []struct {
+		CountryCode string    `db:"country_code"`
+		OsID        uint8     `db:"os_id"`
+		BrowserID   uint8     `db:"browser_id"`
+		Categories  []int16   `db:"categories"`
+		ActionTime  time.Time `db:"action_time"`
 	}
 
-	if err := rows.Err(); err != nil {
+	if err := connect.Select(&items, "SELECT country_code, os_id, browser_id, categories, action_time FROM example"); err != nil {
 		log.Fatal(err)
 	}
+
+	for _, item := range items {
+		log.Printf("country: %s, os: %d, browser: %d, categories: %v, action_time: %s", item.CountryCode, item.OsID, item.BrowserID, item.Categories, item.ActionTime)
+	}
+
 }
 
 func ClickDropTable(c *gin.Context) {

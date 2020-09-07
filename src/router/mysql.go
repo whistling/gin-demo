@@ -13,6 +13,7 @@ func InitMysqlRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		MysqlRouter.GET("update", v1.Update)
 		MysqlRouter.GET("delete", v1.Delete)
 		MysqlRouter.GET("find", v1.Find)
+		MysqlRouter.GET("create", v1.CreateTable)
 	}
 	return MysqlRouter
 }
