@@ -12,6 +12,7 @@ func Routers() *gin.Engine {
 	router.InitTestRouter(ApiGroup)
 	router.InitMysqlRouter(ApiGroup)
 	router.InitClickHouseRouter(ApiGroup)
-
+	router.InitHelloRouter(ApiGroup)
+	router.InitKafkaRouter(ApiGroup)
 	return Router
 }
