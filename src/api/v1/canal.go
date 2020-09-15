@@ -2,8 +2,10 @@ package v1
 
 import (
 	"fmt"
+	"gin/src/utils/response"
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"github.com/golang/protobuf/proto"
+	proto1 "github.com/golang/protobuf/proto"
 	"github.com/withlin/canal-go/client"
 	protocol "github.com/withlin/canal-go/protocol"
 	"log"
@@ -13,6 +15,7 @@ import (
 var (
 	redisCon *redis.Client
 	canalCon *client.SimpleCanalConnector
+	prefix   = "test:"
 )
 
 func init() {
@@ -41,25 +44,29 @@ func init() {
 			Password: "",
 			DB:       0,
 		})
-
 }
 
-func run() {
-	for {
-		message, err := canalCon.Get(100, nil, nil)
-		checkError(err)
-		batchId := message.Id
-		if batchId == -1 || len(message.Entries) <= 0 {
-			time.Sleep(3 * time.Second)
-			fmt.Println("===没有数据了===")
-			continue
-		}
-		fmt.Println("batch id is ", batchId)
-		dealEntry(message.Entries)
+func CanalRun(c *gin.Context) {
+	//for {
+	message, err := canalCon.Get(1, nil, nil)
+	checkError(err)
+	batchId := message.Id
+
+	if batchId == -1 || len(message.Entries) <= 0 {
+		time.Sleep(3 * time.Second)
+		fmt.Println("===没有数据了===")
+		//continue
 	}
+	fmt.Println("batch id is ", batchId)
+	dealEntry(c, message.Entries)
+	response.OkWithData(gin.H{
+		"batchId": batchId,
+		"entries": message.Entries,
+	}, c)
+	//}
 }
 
-func dealEntry(entrys []protocol.Entry) {
+func dealEntry(c *gin.Context, entrys []protocol.Entry) {
 	for _, entry := range entrys {
 		if entry.GetEntryType() == protocol.EntryType_TRANSACTIONBEGIN ||
 			entry.GetEntryType() == protocol.EntryType_TRANSACTIONEND {
@@ -67,7 +74,7 @@ func dealEntry(entrys []protocol.Entry) {
 		}
 		rowChange := new(protocol.RowChange)
 
-		err := proto.Unmarshal(entry.GetStoreValue(), rowChange)
+		err := proto1.Unmarshal(entry.GetStoreValue(), rowChange)
 		checkError(err)
 		if rowChange != nil {
 			eventType := rowChange.GetEventType()
@@ -75,37 +82,48 @@ func dealEntry(entrys []protocol.Entry) {
 			fmt.Println(fmt.Sprintf("================> binlog[%s : %d],name[%s,%s], eventType: %s", header.GetLogfileName(), header.GetLogfileOffset(), header.GetSchemaName(), header.GetTableName(), header.GetEventType()))
 
 			for _, rowData := range rowChange.GetRowDatas() {
+				res := parseData(rowData.GetAfterColumns())
+				fmt.Println(res, res["id"])
 				if eventType == protocol.EventType_DELETE {
-					deleteRedis(rowData.GetBeforeColumns())
 					printColumn(rowData.GetBeforeColumns())
+					deleteRedis(rowData.GetBeforeColumns(), c)
 				} else if eventType == protocol.EventType_INSERT {
-					insertRedis(rowData.GetBeforeColumns())
 					printColumn(rowData.GetAfterColumns())
-				} else if eventType == protocol.EventType_UPDATE {
+					insertRedis(rowData.GetAfterColumns(), c)
+				} else {
 					fmt.Println("-------> before")
 					printColumn(rowData.GetBeforeColumns())
 					fmt.Println("-------> after")
 					printColumn(rowData.GetAfterColumns())
+					updateRedis(rowData.GetAfterColumns(), c)
 				}
 			}
 		}
 	}
 }
 
-func deleteRedis(columns []*protocol.Column) {
+func parseData(columns []*protocol.Column) map[string]interface{} {
+	var dat = make(map[string]interface{})
+	for _, col := range columns {
+		dat[col.GetName()] = col.GetValue()
+	}
 
+	return dat
 }
 
-func updateRedis(columns []*protocol.Column) {
-
+func deleteRedis(columns []*protocol.Column, c *gin.Context) {
+	redisCon.Del(c, prefix+columns[0].GetValue())
 }
 
-func insertRedis(columns []*protocol.Column) {
+func updateRedis(columns []*protocol.Column, c *gin.Context) {
+	redisCon.Set(c, prefix+columns[0].GetValue(), columns[1].GetValue(), time.Second*86400)
+}
 
+func insertRedis(columns []*protocol.Column, c *gin.Context) {
+	redisCon.Set(c, prefix+columns[0].GetValue(), columns[1].GetValue(), time.Second*86400)
 }
 
 func printColumn(columns []*protocol.Column) {
-	fmt.Println(columns)
 	for _, col := range columns {
 		fmt.Println(fmt.Sprintf("%s : %s  update= %t", col.GetName(), col.GetValue(), col.GetUpdated()))
 	}
