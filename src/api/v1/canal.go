@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"fmt"
 	"gin/src/utils/response"
 	"github.com/gin-gonic/gin"
@@ -83,44 +84,50 @@ func dealEntry(c *gin.Context, entrys []protocol.Entry) {
 
 			for _, rowData := range rowChange.GetRowDatas() {
 				res := parseData(rowData.GetAfterColumns())
-				fmt.Println(res, res["id"])
 				if eventType == protocol.EventType_DELETE {
+					res = parseData(rowData.GetBeforeColumns())
 					printColumn(rowData.GetBeforeColumns())
-					deleteRedis(rowData.GetBeforeColumns(), c)
+					deleteRedis(res, c)
 				} else if eventType == protocol.EventType_INSERT {
 					printColumn(rowData.GetAfterColumns())
-					insertRedis(rowData.GetAfterColumns(), c)
+					insertRedis(res, c)
 				} else {
 					fmt.Println("-------> before")
 					printColumn(rowData.GetBeforeColumns())
 					fmt.Println("-------> after")
 					printColumn(rowData.GetAfterColumns())
-					updateRedis(rowData.GetAfterColumns(), c)
+					updateRedis(res, c)
 				}
 			}
 		}
 	}
 }
 
-func parseData(columns []*protocol.Column) map[string]interface{} {
-	var dat = make(map[string]interface{})
+//type TestTable struct{
+//	Id int `json:"id"`
+//	Name string `json:"name"`
+//}
+
+func parseData(columns []*protocol.Column) map[string]string {
+	var dat = make(map[string]string)
 	for _, col := range columns {
 		dat[col.GetName()] = col.GetValue()
 	}
-
 	return dat
 }
 
-func deleteRedis(columns []*protocol.Column, c *gin.Context) {
-	redisCon.Del(c, prefix+columns[0].GetValue())
+func deleteRedis(m map[string]string, c *gin.Context) {
+	redisCon.Del(c, prefix+m["id"])
 }
 
-func updateRedis(columns []*protocol.Column, c *gin.Context) {
-	redisCon.Set(c, prefix+columns[0].GetValue(), columns[1].GetValue(), time.Second*86400)
+func updateRedis(m map[string]string, c *gin.Context) {
+	ser, _ := json.Marshal(m)
+	redisCon.Set(c, prefix+m["id"], ser, time.Second*86400)
 }
 
-func insertRedis(columns []*protocol.Column, c *gin.Context) {
-	redisCon.Set(c, prefix+columns[0].GetValue(), columns[1].GetValue(), time.Second*86400)
+func insertRedis(m map[string]string, c *gin.Context) {
+	ser, _ := json.Marshal(m)
+	redisCon.Set(c, prefix+m["id"], ser, time.Second*86400)
 }
 
 func printColumn(columns []*protocol.Column) {
